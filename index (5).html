@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#070b16">
+<title>GullyReflex ⚡ Gully Se Ground Tak</title>
+<style>
+:root{
+  --bg:#070b16; --card:#111a30; --card2:#0c1425; --line:#21304f;
+  --ink:#eaf2ff; --dim:#8fa3c8;
+  --saf:#ff9f1c; --grn:#22c55e; --teal:#2ec4b6; --red:#ef4444; --blu:#3b82f6; --gol:#ffd60a; --pur:#a855f7;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:system-ui,'Segoe UI',Roboto,Arial,sans-serif;color:var(--ink);position:fixed;inset:0}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:pointer}
+.blk{font-family:'Arial Black',Impact,system-ui,sans-serif}
+
+/* ============ SCREENS ============ */
+.screen{position:absolute;inset:0;display:none;flex-direction:column}
+.screen.active{display:flex}
+
+/* ============ HOME ============ */
+#triBar{height:5px;background:linear-gradient(90deg,var(--saf) 0%,var(--saf) 33%,#ffffff88 33%,#ffffff88 66%,var(--grn) 66%,var(--grn) 100%);flex:none}
+.homeTop{flex:none;padding:18px 18px 10px;display:flex;align-items:center;gap:12px}
+.logoBall{width:52px;height:52px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px;background:radial-gradient(circle at 32% 30%,#ff8fa3,#d90429 65%);box-shadow:inset -3px -6px 10px #7a001688,0 6px 16px #d9042944;animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-5px) rotate(6deg)}}
+.appName{font-size:24px;letter-spacing:.5px;line-height:1;background:linear-gradient(90deg,var(--saf),var(--gol) 40%,var(--grn));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:900}
+.appTag{font-size:12px;color:var(--dim);margin-top:4px}
+.iconBtn{margin-left:auto;width:40px;height:40px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:18px;display:flex;align-items:center;justify-content:center}
+.homeWrap{flex:1;overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;padding:6px 18px 30px}
+.playerCard{margin-top:8px;background:linear-gradient(135deg,#141f3d,#0d1526);border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;align-items:center;gap:13px;position:relative;overflow:hidden}
+.playerCard:before{content:'';position:absolute;inset:0;background:radial-gradient(400px 120px at 80% -20%,#2ec4b622,transparent 60%)}
+.badgeCircle{width:54px;height:54px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px;background:#0a1120;border:2px solid var(--gol);box-shadow:0 0 18px #ffd60a33}
+.pName{font-size:19px;font-weight:800}
+.pLvl{font-size:12px;color:var(--dim);margin-top:2px}
+.xpWrap{margin-top:8px;height:9px;background:#0a1120;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+.xpFill{height:100%;width:0%;border-radius:6px;background:linear-gradient(90deg,var(--teal),var(--grn));transition:width .6s cubic-bezier(.2,.9,.2,1)}
+.editBtn{position:absolute;top:12px;right:12px;font-size:13px;color:var(--dim);padding:6px 10px;border-radius:10px;background:#0a112088;border:1px solid var(--line);z-index:2}
+.statRow{display:flex;gap:10px;margin-top:12px}
+.statChip{flex:1;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:11px 6px;text-align:center}
+.statChip b{display:block;font-size:17px;margin-top:3px}
+.statChip span{font-size:10.5px;color:var(--dim);letter-spacing:.4px}
+.secTitle{margin:18px 2px 10px;font-size:14px;letter-spacing:2px;color:var(--dim);font-weight:800}
+.drillGrid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.dcard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px 13px;text-align:left;position:relative;overflow:hidden;transition:transform .12s}
+.dcard:active{transform:scale(.96)}
+.dcard .glow{position:absolute;inset:0;opacity:.14;pointer-events:none}
+.dIcon{font-size:32px;filter:drop-shadow(0 4px 8px #0007)}
+.dName{font-weight:800;font-size:15.5px;margin-top:9px}
+.dDesc{font-size:11px;color:var(--dim);margin-top:3px;line-height:1.35}
+.dBest{margin-top:9px;font-size:11px;font-weight:700;color:var(--gol)}
+.bigBtn{width:100%;margin-top:16px;padding:16px;border-radius:18px;font-weight:900;font-size:16px;letter-spacing:.5px;color:#071018;background:linear-gradient(90deg,var(--saf),var(--gol));box-shadow:0 8px 24px #ff9f1c33;transition:transform .12s}
+.bigBtn:active{transform:scale(.97)}
+.foot{margin-top:20px;text-align:center;font-size:11px;color:#5b6b8c;line-height:1.7}
+
+/* ============ GAME ============ */
+.gBar{flex:none;display:flex;align-items:center;gap:10px;padding:12px 14px}
+.backBtn{width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:19px;display:flex;align-items:center;justify-content:center}
+.gTitle{flex:1;text-align:center;font-weight:800;font-size:16px}
+.gSpacer{width:42px}
+.hud{flex:none;display:flex;gap:10px;padding:0 14px 10px}
+.hudChip{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 4px;text-align:center;font-size:12px;color:var(--dim)}
+.hudChip b{display:block;font-size:18px;color:var(--ink)}
+#stage{flex:1;position:relative;overflow:hidden;margin:0 10px 10px;border-radius:22px;background:linear-gradient(180deg,#0c1425,#080d1a);border:1px solid var(--line)}
+#stage:before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,#ffffff05 0 2px,transparent 2px 34px),repeating-linear-gradient(90deg,#ffffff04 0 2px,transparent 2px 34px);pointer-events:none}
+.count{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:92px;font-weight:900;color:var(--gol);text-shadow:0 0 40px #ffd60a66;animation:cpop .5s ease;z-index:5;pointer-events:none}
+@keyframes cpop{0%{transform:scale(1.7);opacity:0}100%{transform:scale(1);opacity:1}}
+.helpLine{position:absolute;left:0;right:0;bottom:16px;text-align:center;font-size:12px;color:var(--dim);pointer-events:none;padding:0 20px;z-index:4}
+
+/* Green Tap */
+.tapPad{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:background .12s;z-index:3}
+.tapPad.red{background:radial-gradient(600px 400px at 50% 40%,#7f1d1d,#450a0a)}
+.tapPad.green{background:radial-gradient(600px 400px at 50% 40%,#14532d,#052e16)}
+.tapMsg{font-size:30px;font-weight:900;letter-spacing:1px;text-shadow:0 4px 20px #0009}
+.tapSub{margin-top:10px;font-size:14px;color:#e7edfccc}
+.dotRow{position:absolute;top:16px;left:0;right:0;display:flex;justify-content:center;gap:9px}
+.dot{width:11px;height:11px;border-radius:50%;background:#ffffff26;border:1px solid #ffffff33}
+.dot.done{background:var(--gol);border-color:var(--gol);box-shadow:0 0 10px #ffd60a88}
+
+/* Smash */
+.tgt{position:absolute;width:84px;height:84px;margin:-42px 0 0 -42px;display:flex;align-items:center;justify-content:center;font-size:56px;z-index:3;animation:pop .15s ease;cursor:pointer;filter:drop-shadow(0 6px 14px #000a)}
+@keyframes pop{from{transform:scale(.2) rotate(-30deg)}to{transform:scale(1) rotate(0)}}
+.tgt.fade{opacity:0;transform:scale(.5);transition:all .18s}
+
+/* Catch */
+.glove{position:absolute;bottom:24px;width:120px;height:40px;margin-left:-60px;border-radius:20px;background:linear-gradient(180deg,#ffbe0b,#f77f00);display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 8px 24px #ff9f1c44,inset 0 -4px 8px #00000033;z-index:3}
+.ball{position:absolute;width:38px;height:38px;margin:-19px 0 0 -19px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#ff8fa3,#d90429 65%);box-shadow:inset -3px -6px 9px #7a001688,0 5px 12px #0009;z-index:3}
+.ball:after{content:'';position:absolute;left:50%;top:5px;bottom:5px;width:2px;background:#ffd6dcaa;transform:translateX(-50%) rotate(14deg);border-radius:2px}
+
+/* Arrows */
+.arrWrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3}
+.arrBig{font-size:104px;animation:pop .18s ease;filter:drop-shadow(0 8px 24px #000a)}
+.arrHint{margin-top:16px;font-size:13px;color:var(--dim)}
+.arrTime{position:absolute;left:24px;right:24px;bottom:56px;height:7px;background:#ffffff14;border-radius:5px;overflow:hidden}
+.arrTimeFill{height:100%;width:100%;background:linear-gradient(90deg,var(--teal),var(--saf));transform-origin:left}
+.comboTag{position:absolute;top:14px;right:16px;font-weight:900;color:var(--gol);font-size:15px;text-shadow:0 0 14px #ffd60a66;z-index:4}
+
+/* ============ RESULT ============ */
+.resWrap{flex:1;overflow-y:auto;touch-action:pan-y;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;text-align:center}
+.rIcon{font-size:66px;animation:bob 2.4s ease-in-out infinite}
+.rName{font-size:22px;font-weight:900;margin-top:8px}
+.rScore{font-size:58px;font-weight:900;margin-top:6px;background:linear-gradient(90deg,var(--gol),var(--saf));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.rTags{margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.rTag{display:none;font-size:12px;font-weight:800;padding:6px 12px;border-radius:999px;background:#ffd60a1c;color:var(--gol);border:1px solid #ffd60a55}
+.rTag.lv{background:#2ec4b61c;color:var(--teal);border-color:#2ec4b655}
+.rRows{margin-top:18px;width:100%;max-width:320px;background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.rRow{display:flex;justify-content:space-between;padding:13px 16px;font-size:14px;border-bottom:1px solid var(--line)}
+.rRow:last-child{border-bottom:none}
+.rRow span{color:var(--dim)}
+.rRow b{color:var(--ink)}
+.rXp{color:var(--grn)!important}
+.rBtns{display:flex;gap:10px;width:100%;max-width:320px;margin-top:18px}
+.halfBtn{flex:1;padding:15px;border-radius:16px;font-weight:900;font-size:15px}
+.halfBtn.alt{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+.halfBtn.main{background:linear-gradient(90deg,var(--saf),var(--gol));color:#071018}
+.rQuote{margin-top:16px;font-size:12.5px;color:var(--dim);font-style:italic;max-width:300px}
+
+/* ============ PROGRESS ============ */
+.pWrap{flex:1;overflow-y:auto;touch-action:pan-y;padding:6px 18px 30px}
+.pCard{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:15px;margin-top:12px}
+.pRow{display:flex;align-items:center;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line)}
+.pRow:last-child{border-bottom:none}
+.pIcon{font-size:24px;width:34px;text-align:center}
+.pInfo{flex:1}
+.pInfo b{font-size:14px}
+.pInfo div{font-size:11px;color:var(--dim);margin-top:2px}
+.pBest{font-weight:900;font-size:15px;color:var(--gol)}
+.chartBox{margin-top:14px}
+.chart{display:flex;align-items:flex-end;gap:7px;height:120px;padding:8px 4px 0}
+.cbar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px;height:100%}
+.cbar i{display:block;width:100%;max-width:26px;border-radius:6px 6px 3px 3px;background:linear-gradient(180deg,var(--teal),#0e7490);min-height:4px}
+.cbar span{font-size:9px;color:var(--dim)}
+.resetBtn{margin-top:16px;width:100%;padding:13px;border-radius:14px;background:#7f1d1d26;color:#fca5a5;border:1px solid #7f1d1d;font-size:13px;font-weight:700}
+/* Mission */
+.msnCard{margin-top:12px;background:linear-gradient(135deg,#10281c,#0d1526);border:1px solid #22c55e55;border-radius:20px;padding:14px 16px}
+.msnTitle{font-weight:900;font-size:14px;letter-spacing:1px;color:var(--grn)}
+.msnItem{display:flex;align-items:center;gap:11px;padding:9px 0;border-bottom:1px solid #22c55e1e;font-size:14px}
+.msnItem:last-child{border-bottom:none}
+.msnItem .mdot{border-radius:50%;width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center;background:#ffffff12;font-size:13px;border:1px solid var(--line)}
+.msnItem .minfo{flex:1;font-weight:700}
+.msnItem .mprog{font-size:11.5px;color:var(--dim);font-weight:800}
+.msnDone{opacity:.55;text-decoration:line-through}
+.msnClaim{margin-top:9px;text-align:center;font-size:12.5px;color:var(--gol);font-weight:800}
+/* Benchmark */
+.benchBox{margin-top:14px;width:100%;max-width:320px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px 16px;text-align:left}
+.benchTitle{font-size:12px;font-weight:800;letter-spacing:1.5px;color:var(--gol);margin-bottom:6px;text-align:center}
+.bRow{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11.5px}
+.bRow .lbl{width:84px;text-align:right;color:var(--dim);flex:none}
+.bRow .barWrap{flex:1;height:16px;background:#0a1120;border-radius:8px;overflow:hidden}
+.bRow .bar{height:100%;border-radius:8px;transition:width .8s cubic-bezier(.2,.9,.2,1)}
+.bRow .v{width:58px;text-align:left;font-weight:800;flex:none}
+.verdict{margin-top:12px;font-size:14px;font-weight:800;color:var(--teal);text-align:center;line-height:1.4}
+#rShare{margin-top:10px;width:100%;max-width:320px}
+/* Recovery Breath */
+.breathWrap{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3}
+#bCirc{width:200px;height:200px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#7dd3fc,#0369a1 72%);box-shadow:0 0 70px #22d3ee55,inset 0 -12px 32px #00131f88;transform:scale(.62);display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;color:#062a3a}
+.bPhase{margin-top:28px;font-size:27px;font-weight:900;letter-spacing:3px}
+.bSub{margin-top:8px;color:var(--dim);font-size:12.5px;padding:0 24px;text-align:center}
+.bCyc{position:absolute;top:16px;left:0;right:0;text-align:center;font-size:12.5px;color:var(--teal);font-weight:800;letter-spacing:2.5px}
+/* Duo buttons + water */
+.duoRow{display:flex;gap:10px;margin-top:12px}
+.duoBtn{flex:1;padding:15px 8px;border-radius:16px;font-weight:900;font-size:13.5px;letter-spacing:.5px;transition:transform .12s}
+.duoBtn:active{transform:scale(.96)}
+.rush{background:linear-gradient(90deg,#ff9f1c,#ffd60a);color:#071018;box-shadow:0 6px 18px #ff9f1c33}
+.battle{background:linear-gradient(90deg,#f43f5e,#9f1239);color:#fff;box-shadow:0 6px 18px #f43f5e33}
+.waterCard{margin-top:12px;background:linear-gradient(135deg,#08202f,#0c1425);border:1px solid #0ea5e955;border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.wBtn{background:linear-gradient(90deg,#38bdf8,#0284c7);color:#04121d;font-weight:900;padding:11px 14px;border-radius:12px;font-size:13px;transition:transform .12s}
+.wBtn:active{transform:scale(.95)}
+
+/* ============ TOAST & MODAL & CONFETTI ============ */
+#toast{position:fixed;top:64px;left:50%;transform:translate(-50%,-26px);background:#0d1526f2;border:1px solid var(--line);border-radius:14px;padding:10px 18px;font-size:14px;font-weight:800;opacity:0;pointer-events:none;transition:all .25s;z-index:60;text-align:center;max-width:86%}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#toastSub{font-size:11px;color:var(--dim);font-weight:400;margin-top:2px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:55}
+#modal{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:70;padding:22px}
+#modal.show{display:flex}
+.mCard{background:var(--card2);border:1px solid var(--line);border-radius:22px;padding:22px;max-width:340px;width:100%;max-height:80%;overflow-y:auto;touch-action:pan-y}
+.mTitle{font-size:18px;font-weight:900;margin-bottom:12px}
+.mRow{font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--line);color:var(--dim);line-height:1.5}
+.mRow b{color:var(--ink)}
+.mClose{margin-top:16px;width:100%;padding:13px;border-radius:14px;background:linear-gradient(90deg,var(--saf),var(--gol));color:#071018;font-weight:900}
+</style>
+</head>
+<body oncontextmenu="return false">
+<div id="triBar"></div>
+
+<!-- ================= HOME ================= -->
+<div class="screen active" id="scr-home">
+  <div class="homeTop">
+    <div class="logoBall">🏏</div>
+    <div>
+      <div class="appName blk">GULLYREFLEX</div>
+      <div class="appTag">Gully se ground tak — train your reflexes ⚡</div>
+    </div>
+    <button class="iconBtn" id="btnHelp">ℹ️</button>
+  </div>
+  <div class="homeWrap">
+    <div class="playerCard">
+      <div class="badgeCircle" id="pBadge">🥉</div>
+      <div style="flex:1">
+        <div class="pName" id="pName">Champion</div>
+        <div class="pLvl"><span id="pLvl">Level 1</span> · <span id="pXpTxt">0/100 XP</span></div>
+        <div class="xpWrap"><div class="xpFill" id="pXpFill"></div></div>
+      </div>
+      <button class="editBtn" id="btnEdit">✏️ naam</button>
+    </div>
+    <div class="statRow">
+      <div class="statChip">🔥<b id="sStreak">0</b><span>DAY STREAK</span></div>
+      <div class="statChip">⚡<b id="sBest">—</b><span>BEST REFLEX</span></div>
+      <div class="statChip">🎮<b id="sPlays">0</b><span>DRILLS DONE</span></div>
+      <div class="statChip">🏅<b id="sLvl">1</b><span>LEVEL</span></div>
+    </div>
+    <div class="duoRow">
+      <button class="duoBtn rush" id="btnRush">⚡ 5-MIN RUSH</button>
+      <button class="duoBtn battle" id="btnBattle">⚔️ GULLY BATTLE 2P</button>
+    </div>
+    <div class="msnCard" id="msnCard">
+      <div class="msnTitle">🫡 AAJ KA MISSION <span style="color:var(--dim);font-weight:400;font-size:11px">— coach ka daily drill plan</span></div>
+      <div id="msnList"></div>
+      <div class="msnClaim" id="msnClaim"></div>
+    </div>
+    <div class="waterCard" id="waterCard">
+      <div style="font-size:26px">💧</div>
+      <div style="flex:1">
+        <div style="font-weight:800;font-size:14px">PAANI METER <span style="color:var(--dim);font-weight:400;font-size:11px">— hydration = fast reflexes</span></div>
+        <div style="font-size:12px;color:#7dd3fc;margin-top:4px;letter-spacing:1px" id="wDrops">—</div>
+      </div>
+      <button class="wBtn" id="wPlus">+ GLASS</button>
+    </div>
+    <div class="secTitle">— AAJ KE DRILLS —</div>
+    <div class="drillGrid" id="drillGrid"></div>
+    <button class="bigBtn" id="btnProgress">📈 MERA PROGRESS DEKHO</button>
+    <div class="foot">Made with ❤️ by <b>Samarth Mishra</b> · Ahilyanagar, Maharashtra 🇮🇳<br>Built for PeddieHacks 2026 — Sports Track 🏏<br>100% offline · apna data apke phone pe hi rehta hai 🔒</div>
+  </div>
+</div>
+
+<!-- ================= GAME ================= -->
+<div class="screen" id="scr-game">
+  <div class="gBar">
+    <button class="backBtn" id="btnBack">←</button>
+    <div class="gTitle" id="gTitle">Drill</div>
+    <div class="gSpacer"></div>
+  </div>
+  <div class="hud" id="hud"></div>
+  <div id="stage"></div>
+</div>
+
+<!-- ================= RESULT ================= -->
+<div class="screen" id="scr-result">
+  <div class="resWrap">
+    <div class="rIcon" id="rIcon">⚡</div>
+    <div class="rName" id="rName">Green Tap</div>
+    <div class="rScore blk" id="rScore">250 ms</div>
+    <div class="rTags">
+      <span class="rTag" id="rBestTag">🏆 NEW BEST!</span>
+      <span class="rTag lv" id="rLevelTag">⬆️ LEVEL UP!</span>
+    </div>
+    <div class="rRows">
+      <div class="rRow"><span>Score</span><b id="rScore2">—</b></div>
+      <div class="rRow"><span>All-time Best</span><b id="rBest">—</b></div>
+      <div class="rRow"><span>XP Earned</span><b class="rXp" id="rXp">+0 XP</b></div>
+      <div class="rRow"><span>Streak</span><b id="rStreak">🔥 0</b></div>
+    </div>
+    <div class="benchBox" id="rBench" style="display:none">
+      <div class="benchTitle">📊 YOU VS THE WORLD</div>
+      <div class="bRow"><div class="lbl">TU 🔥</div><div class="barWrap"><div class="bar" id="bYou" style="background:linear-gradient(90deg,#2ec4b6,#22c55e);width:0%"></div></div><div class="v" id="bYouV" style="color:#22c55e"></div></div>
+      <div class="bRow"><div class="lbl">Avg adult</div><div class="barWrap"><div class="bar" style="background:#8fa3c8;width:83%"></div></div><div class="v" style="color:#8fa3c8">273 ms</div></div>
+      <div class="bRow"><div class="lbl">Pro athlete</div><div class="barWrap"><div class="bar" style="background:#ffd60a;width:61%"></div></div><div class="v" style="color:#ffd60a">200 ms</div></div>
+      <div class="verdict" id="rVerdict"></div>
+    </div>
+    <div class="rBtns">
+      <button class="halfBtn alt" id="rHome">🏠 HOME</button>
+      <button class="halfBtn main" id="rReplay">🔁 PHIR SE</button>
+    </div>
+    <button class="halfBtn alt" id="rShare">⚔️ FRIEND KO CHALLENGE BHEJ 📲</button>
+    <div class="rQuote" id="rQuote"></div>
+  </div>
+</div>
+
+<!-- ================= PROGRESS ================= -->
+<div class="screen" id="scr-progress">
+  <div class="gBar">
+    <button class="backBtn" id="pBack">←</button>
+    <div class="gTitle">📈 Mera Progress</div>
+    <div class="gSpacer"></div>
+  </div>
+  <div class="pWrap">
+    <div class="pCard" id="pGames"></div>
+    <div class="pCard chartBox">
+      <b style="font-size:14px">⚡ Reaction Time History (ms — kam = better)</b>
+      <div class="chart" id="chart"></div>
+    </div>
+    <button class="resetBtn" id="btnReset">🗑️ Saara data reset karo</button>
+  </div>
+</div>
+
+<div id="toast"><span id="toastTitle"></span><div id="toastSub"></div></div>
+<canvas id="confetti"></canvas>
+
+<div id="modal">
+  <div class="mCard">
+    <div class="mTitle">ℹ️ Kaise Khele?</div>
+    <div class="mRow">⚡ <b>Green Tap</b> — Screen RED ka wait karo, GREEN hote hi tap! Cricket players ki reaction ~200-250ms hoti hai. Aapka?</div>
+    <div class="mRow">🎯 <b>Target Smash</b> — 20 second mein jitne targets aa sake utne tap karo. Aankh + haath ki speed!</div>
+    <div class="mRow">🧤 <b>Keeper Catch</b> — Glove ko drag karke girte balls pakdo. Dhoni banna hai toh ye drill zaroori! 🏏</div>
+    <div class="mRow">🧭 <b>Agility Arrows</b> — Jo arrow dikhe us direction mein SWIPE karo, jaldi!</div>
+    <div class="mRow">🔥 <b>Roz khelo</b> — streak banao, XP kamao, Level up! Data sirf aapke phone pe, 100% offline.</div>
+    <button class="mClose" id="mClose">SAMAJH GAYA 💪</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ================= CORE ================= */
+const $=s=>document.querySelector(s);
+const KEY='gullyreflex_v1';
+const DEF=()=>({name:'Champion',xp:0,streak:0,lastDay:'',plays:0,best:{tap:0,smash:0,catch:0,arrows:0,battle:0,breath:0},hist:{tap:[]},mission:null,water:{day:'',count:0,done:false}});
+let S=DEF();
+try{const d=JSON.parse(localStorage.getItem(KEY));if(d){S=Object.assign(DEF(),d);S.best=Object.assign(DEF().best,d.best||{});S.hist=Object.assign(DEF().hist,d.hist||{});}}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const lvl=xp=>Math.floor(xp/100)+1;
+const TEST=location.search.indexOf('test')>=0;
+const pad=n=>String(n).padStart(2,'0');
+const dstr=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+function touchStreak(){const t=dstr(new Date());if(S.lastDay===t)return;const y=new Date(Date.now()-864e5);S.streak=(S.lastDay===dstr(y))?S.streak+1:1;S.lastDay=t;}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ================= COACH: FACTS + DAILY MISSIONS ================= */
+const FACTS=[
+'🏏 Pro batters apna shot ~200ms mein decide karte hain — ball se tez SOCHNA padta hai!',
+'⚡ F1 drivers ka average reaction ~200ms hota hai. Tera kitna hai?',
+'🧤 Dhoni ki lightning stumpings = roz ke reflex drills ka result. Train karo, keepers!',
+'🔥 Consistency > Intensity — roz 5-min ka drill, weekend 2 ghante se better!',
+'🏃 Agility = direction change ki speed. Pro fielders ise daily train karte hain.',
+'🧠 Reaction time gift nahi hai — SKILL hai. Train karo, improve hoga!',
+'👁️ Short daily practice se hand-eye coordination measurably improve hota hai.',
+'💪 Champion wahi jo apna hi record todne ke liye khelta hai. Khud se compete kar!'];
+const MPOOL=[['tap',2,3],['smash',1,2],['catch',1,2],['arrows',1,2],['breath',1,1],['sprint',1,1]];
+function ensureMission(){const t=dstr(new Date());if(S.mission&&S.mission.day===t)return;const pool=MPOOL.slice();const items=[];while(items.length<3&&pool.length){const i=Math.floor(Math.random()*pool.length);const it=pool.splice(i,1)[0];items.push({id:it[0],goal:it[1]+Math.floor(Math.random()*(it[2]-it[1]+1)),done:0});}S.mission={day:t,items:items,claimed:false};save();}
+function renderMissions(){const m=S.mission;const list=$('#msnList');if(!m||!list){return;}list.innerHTML='';let all=true;m.items.forEach(it=>{const g=GAMES[it.id];const done=it.done>=it.goal;if(!done)all=false;const r=document.createElement('div');r.className='msnItem'+(done?' msnDone':'');r.innerHTML='<div class="mdot">'+(done?'✅':g.icon)+'</div><div class="minfo">'+g.name+' × '+it.goal+'</div><div class="mprog">'+Math.min(it.done,it.goal)+'/'+it.goal+'</div>';list.appendChild(r);});const c=$('#msnClaim');c.textContent=all?(m.claimed?'🏆 MISSION COMPLETE! +30 XP claimed — coach proud hai!':'') :'Sab drills complete karo → +30 BONUS XP 🎁';}
+function missionHit(id){const m=S.mission;if(!m)return false;const it=m.items.find(x=>x.id===id);if(it)it.done++;const all=m.items.every(x=>x.done>=x.goal);if(all&&!m.claimed){m.claimed=true;S.xp+=30;save();return true;}save();return false;}
+
+/* ================= HYDRATION METER ================= */
+function touchWater(){const t=dstr(new Date());if(!S.water||S.water.day!==t){S.water={day:t,count:0,done:false};save();}}
+function renderWater(){touchWater();const c=S.water.count;$('#wDrops').textContent='💧'.repeat(c)+'▫'.repeat(Math.max(0,8-c))+'  '+c+'/8 glasses';}
+function addGlass(){touchWater();if(S.water.count>=8){toast('Bas bhai! 😄','8 glasses done — ab kal!');return;}S.water.count++;S.xp+=2;if(S.water.count===8&&!S.water.done){S.water.done=true;save();renderWater();sFan();confetti(120);toast('HYDRATION COMPLETE! 💧🏆','Recovery on point — athlete move!');return;}save();sHit();renderWater();}
+
+/* ================= 5-MIN RUSH (chained circuit) ================= */
+let RUSH=null;
+const RUSH_STEPS=['smash','sprint','tap','arrows','breath'];
+function startRush(){RUSH={i:0,xp:0};rushSplash();}
+function rushSplash(){
+  if(!RUSH)return;
+  const id=RUSH_STEPS[RUSH.i],g=GAMES[id];
+  const stage=$('#stage');stage.innerHTML='';
+  hud('<div class="hudChip">RUSH<b>'+(RUSH.i+1)+'/'+RUSH_STEPS.length+'</b></div><div class="hudChip">XP BANK<b>'+RUSH.xp+'</b></div>');
+  $('#gTitle').textContent='⚡ 5-MIN RUSH';
+  show('scr-game');
+  const o=document.createElement('div');o.className='count';o.style.fontSize='32px';o.style.textAlign='center';o.style.padding='0 24px';o.style.lineHeight='1.35';
+  o.innerHTML='ROUND '+(RUSH.i+1)+'<br>'+g.icon+' '+g.name+(RUSH.i===0?'<div style="font-size:14px;color:var(--dim);margin-top:12px;font-weight:400">Back-to-back circuit — rukna nahi! 🔥</div>':'<div style="font-size:13px;color:var(--dim);margin-top:12px;font-weight:400">Saans le... GO! 💪</div>');
+  stage.appendChild(o);sGo();
+  const t=setTimeout(()=>{if(RUSH)launch(id);},1700);
+  addC(()=>clearTimeout(t));
+}
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));}
+
+/* ================= SOUND ================= */
+let AC=null;
+function ac(){if(!AC){try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}}if(AC&&AC.state==='suspended'){AC.resume();}return AC;}
+function beep(f,d,type,vol,delay){d=d||0.12;type=type||'square';vol=vol||0.16;delay=delay||0;const a=ac();if(!a)return;const t=a.currentTime+delay;const o=a.createOscillator(),g=a.createGain();o.type=type;o.frequency.setValueAtTime(f,t);g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(vol,t+0.012);g.gain.exponentialRampToValueAtTime(0.0001,t+d);o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+d+0.05);}
+const sTick=()=>beep(1100,0.06,'square',0.1);
+const sGo=()=>{beep(880,0.1,'sine',0.2);beep(1320,0.16,'sine',0.2,0.09);};
+const sHit=()=>beep(760,0.07,'square',0.16);
+const sMiss=()=>beep(140,0.22,'sawtooth',0.16);
+const sCatch=()=>{beep(520,0.07,'triangle',0.2);beep(880,0.09,'triangle',0.18,0.06);};
+const sFan=()=>{[523,659,784,1047,1319].forEach((f,i)=>beep(f,0.17,'triangle',0.18,i*0.11));};
+
+/* ================= CONFETTI ================= */
+let ctx=null,parts=[],craf=0;
+const CCOL=['#ff9f1c','#ffffff','#22c55e','#2ec4b6','#ffd60a','#3b82f6'];
+function confetti(n){const cv=$('#confetti');cv.width=innerWidth;cv.height=innerHeight;ctx=cv.getContext('2d');parts=[];for(let i=0;i<n;i++){parts.push({x:Math.random()*innerWidth,y:-20-Math.random()*innerHeight*0.4,w:5+Math.random()*7,h:8+Math.random()*10,c:CCOL[i%CCOL.length],vy:2.2+Math.random()*2.4,vx:-1+Math.random()*2,r:Math.random()*Math.PI,vr:-0.1+Math.random()*0.2});}cancelAnimationFrame(craf);cstep();}
+function cstep(){ctx.clearRect(0,0,innerWidth,innerHeight);let alive=0;for(const p of parts){p.y+=p.vy;p.x+=p.vx+Math.sin(p.y*0.02);p.r+=p.vr;if(p.y<innerHeight+30)alive++;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.r);ctx.fillStyle=p.c;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore();}if(alive){craf=requestAnimationFrame(cstep);}else{ctx.clearRect(0,0,innerWidth,innerHeight);}}
+
+/* ================= TOAST ================= */
+let toastT=0;
+function toast(m,sub){$('#toastTitle').textContent=m;$('#toastSub').textContent=sub||'';const t=$('#toast');t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),1200);}
+
+/* ================= GAME INFRA ================= */
+let CLEAN=[],CUR=null;
+function addC(f){CLEAN.push(f);}
+function cleanupAll(){CLEAN.forEach(f=>{try{f()}catch(e){}});CLEAN=[];}
+function countdown(stage,cb){const o=document.createElement('div');o.className='count';stage.appendChild(o);let n=3;o.textContent=n;sTick();const iv=setInterval(()=>{n--;if(n>0){o.textContent=n;sTick();}else if(n===0){o.textContent='GO!';sGo();}else{clearInterval(iv);o.remove();cb();}},TEST?260:720);addC(()=>{clearInterval(iv);if(o.parentNode)o.remove();});}
+function hud(htmlC){$('#hud').innerHTML=htmlC;}
+
+const QUOTES=[
+ '"Practice like you have never won. Play like you have never lost."',
+ '"Champions gully mein bante hain, TV pe nahi." 🏏',
+ '"Ek din mehenat nahi chhodti, ek din mehenat chhod deti hai. Aaj wala din nahi!"',
+ '"Dhoni bhi kabhi gully keeper tha." 🧤',
+ '"Your only competition is yesterday ka TU!" ⚡'];
+
+/* ================= GAMES ================= */
+const GAMES={
+/* ---------- 1. GREEN TAP ---------- */
+tap:{
+ icon:'⚡',name:'Green Tap',desc:'Pure reaction speed test',better:'low',
+ fmt:v=>v?Math.round(v)+' ms':'—',
+ xp:r=>clamp((400-r.score)*0.55,15,140),
+ start(stage,done){
+  hud('<div class="hudChip">ROUND<b id="hRound">1/5</b></div><div class="hudChip">LAST<b id="hLast">—</b></div><div class="hudChip">FOULS<b id="hFoul">0</b></div>');
+  const pad=document.createElement('div');pad.className='tapPad red';
+  pad.innerHTML='<div class="tapMsg" id="tapMsg">TAP TO START</div><div class="tapSub" id="tapSub">Screen GREEN hote hi tap karo!</div>';
+  const dots=document.createElement('div');dots.className='dotRow';dots.innerHTML='<div class="dot"></div>'.repeat(5);
+  stage.appendChild(pad);stage.appendChild(dots);
+  const dd=dots.querySelectorAll('.dot');
+  let round=0,times=[],fouls=0,phase='idle',t0=0,tmr=0;
+  function goGreen(){phase='green';pad.classList.remove('red');pad.classList.add('green');$('#tapMsg').textContent='TAP!';$('#tapSub').textContent='ABHI!!';t0=performance.now();beep(1567,0.1,'sine',0.22);}
+    function waitGreen(){phase='wait';pad.classList.remove('green');pad.classList.add('red');$('#tapMsg').textContent='WAIT...';$('#tapSub').textContent=round===0?'Green ka intezaar karo 👀':FACTS[Math.floor(Math.random()*FACTS.length)];const delay=TEST?150+Math.random()*350:1200+Math.random()*2300;tmr=setTimeout(goGreen,delay);}
+  pad.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    if(phase==='idle'){sTick();waitGreen();}
+    else if(phase==='wait'){clearTimeout(tmr);fouls++;$('#hFoul').textContent=fouls;sMiss();toast('Too soon! 😅','Foul — Green ka wait karo');phase='pause';setTimeout(()=>{if(phase==='pause')waitGreen();},800);}
+    else if(phase==='green'){const dt=performance.now()-t0;times.push(dt);sHit();dd[round].classList.add('done');round++;
+      $('#hLast').textContent=Math.round(dt)+'ms';$('#tapMsg').textContent=Math.round(dt)+' ms';
+      $('#tapSub').textContent=dt<220?'TOOFAAAN! 🔥':dt<300?'Badhiya! 💪':'Thoda aur fast! 🏃';
+      phase='pause';
+      if(round>=5){setTimeout(()=>done({score:times.reduce((a,b)=>a+b,0)/times.length,fouls:fouls}),900);}
+      else{$('#hRound').textContent=(round+1)+'/5';setTimeout(()=>{if(phase==='pause')waitGreen();},900);}
+    }
+  });
+  addC(()=>clearTimeout(tmr));
+ }
+},
+/* ---------- 2. TARGET SMASH ---------- */
+smash:{
+ icon:'🎯',name:'Target Smash',desc:'20 sec — tap jitna ho sake!',better:'high',
+ fmt:v=>v+' hits',
+ xp:r=>clamp(r.score*2,10,130),
+ start(stage,done){
+  const DUR=TEST?6:20;
+  hud('<div class="hudChip">HITS<b id="hScore">0</b></div><div class="hudChip">TIME<b id="hTime">'+DUR+'s</b></div><div class="hudChip">MISSED<b id="hMiss">0</b></div>');
+  const help=document.createElement('div');help.className='helpLine';help.textContent=FACTS[Math.floor(Math.random()*FACTS.length)];stage.appendChild(help);
+  countdown(stage,()=>{
+    let hits=0,missed=0,left=DUR,over=false,alive=false,timers=[];
+    function later(fn,ms){const t=setTimeout(fn,ms);timers.push(t);}
+    function spawn(){
+      if(over)return;
+      const w=stage.clientWidth,h=stage.clientHeight;
+      const t=document.createElement('div');t.className='tgt';t.textContent=Math.random()<0.22?'🏏':(Math.random()<0.5?'🎯':'🥎');
+      t.style.left=(50+Math.random()*(w-110))+'px';t.style.top=(50+Math.random()*(h-130))+'px';
+      alive=true;
+      t.addEventListener('pointerdown',e=>{e.preventDefault();e.stopPropagation();if(over)return;hits++;$('#hScore').textContent=hits;sHit();t.classList.add('fade');setTimeout(()=>t.remove(),160);alive=false;later(spawn,140+Math.random()*260);});
+      stage.appendChild(t);
+      later(()=>{if(alive&&!over){alive=false;missed++;$('#hMiss').textContent=missed;t.classList.add('fade');setTimeout(()=>t.remove(),160);spawn();}},720);
+    }
+    spawn();
+    const iv=setInterval(()=>{left--;$('#hTime').textContent=Math.max(0,left)+'s';if(left<=3&&left>0)sTick();if(left<=0){over=true;clearInterval(iv);timers.forEach(clearTimeout);stage.querySelectorAll('.tgt').forEach(t=>t.remove());done({score:hits,missed:missed});}},1000);
+    addC(()=>{over=true;clearInterval(iv);timers.forEach(clearTimeout);});
+  });
+ }
+},
+/* ---------- 3. KEEPER CATCH ---------- */
+catch:{
+ icon:'🧤',name:'Keeper Catch',desc:'Wicket-keeper drill!',better:'high',
+ fmt:v=>v+' catches',
+ xp:r=>clamp(r.score*3,10,140),
+ start(stage,done){
+  const DUR=TEST?6:30;
+  hud('<div class="hudChip">CATCHES<b id="hScore">0</b></div><div class="hudChip">TIME<b id="hTime">'+DUR+'s</b></div><div class="hudChip">DROPPED<b id="hMiss">0</b></div>');
+  const help=document.createElement('div');help.className='helpLine';help.textContent='Drag karke glove move karo! 🧤 · '+FACTS[Math.floor(Math.random()*FACTS.length)];stage.appendChild(help);
+  const glove=document.createElement('div');glove.className='glove';glove.textContent='🧤';stage.appendChild(glove);
+  const ball=document.createElement('div');ball.className='ball';ball.style.opacity='0';stage.appendChild(ball);
+  countdown(stage,()=>{
+    let over=false,caught=0,dropped=0,left=DUR;
+    let gx=stage.clientWidth/2,gtx=gx,raf=0;
+    let b={x:gx,y:-30,vx:0,vy:0,live:false};
+    function newBall(){const w=stage.clientWidth;b.x=40+Math.random()*(w-80);b.y=-30;b.vx=(-1.6+Math.random()*3.2);b.vy=3.1+Math.random()*1.2+(DUR-left)*0.055;b.live=true;ball.style.opacity='1';}
+    newBall();
+    function pd(e){const r=stage.getBoundingClientRect();gtx=clamp(e.clientX-r.left,60,stage.clientWidth-60);}
+    stage.addEventListener('pointerdown',pd);stage.addEventListener('pointermove',pd);
+    addC(()=>{stage.removeEventListener('pointerdown',pd);stage.removeEventListener('pointermove',pd);cancelAnimationFrame(raf);});
+    function loop(){
+      if(over)return;
+      gx+=(gtx-gx)*0.32;glove.style.left=gx+'px';
+      const w=stage.clientWidth,h=stage.clientHeight;
+      if(b.live){
+        b.x+=b.vx;b.y+=b.vy;b.vy+=0.045;
+        if(b.x<26||b.x>w-26)b.vx*=-1;
+        const gy=h-24-40; /* glove top approx */
+        if(b.y>=gy-6&&b.y<=gy+26&&Math.abs(b.x-gx)<66){b.live=false;caught++;$('#hScore').textContent=caught;sCatch();ball.style.opacity='0';newBall();}
+        else if(b.y>h+30){b.live=false;dropped++;$('#hMiss').textContent=dropped;sMiss();ball.style.opacity='0';newBall();}
+        ball.style.left=b.x+'px';ball.style.top=b.y+'px';
+      }
+      raf=requestAnimationFrame(loop);
+    }
+    loop();
+    const iv=setInterval(()=>{left--;$('#hTime').textContent=Math.max(0,left)+'s';if(left<=3&&left>0)sTick();if(left<=0){over=true;clearInterval(iv);cancelAnimationFrame(raf);done({score:caught,dropped:dropped});}},1000);
+    addC(()=>{over=true;clearInterval(iv);});
+  });
+ }
+},
+/* ---------- 4. AGILITY ARROWS ---------- */
+arrows:{
+ icon:'🧭',name:'Agility Arrows',desc:'Direction swipe drill',better:'high',
+ fmt:v=>v+' moves',
+ xp:r=>clamp(r.score*2+(r.maxC||0)*2,10,150),
+ start(stage,done){
+  const DUR=TEST?6:30,WIN=950;
+  hud('<div class="hudChip">SCORE<b id="hScore">0</b></div><div class="hudChip">TIME<b id="hTime">'+DUR+'s</b></div><div class="hudChip">MAX COMBO<b id="hCombo">0</b></div>');
+  const wrap=document.createElement('div');wrap.className='arrWrap';
+  wrap.innerHTML='<div class="arrBig" id="aBig">READY?</div><div class="arrHint">Dikhe arrow ki direction mein SWIPE karo 👆</div>';
+  const bar=document.createElement('div');bar.className='arrTime';bar.innerHTML='<div class="arrTimeFill" id="aFill"></div>';
+  const combo=document.createElement('div');combo.className='comboTag';combo.id='cTag';stage.appendChild(combo);
+  stage.appendChild(wrap);stage.appendChild(bar);
+  countdown(stage,()=>{
+    const DIRS=[['up','⬆️',0,-1],['down','⬇️',0,1],['left','⬅️',-1,0],['right','➡️',1,0]];
+    let over=false,score=0,comboN=0,maxC=0,left=DUR,alive=false,t0=0,dir=0,raf=0;
+    function next(){dir=Math.floor(Math.random()*4);$('#aBig').textContent=DIRS[dir][1];$('#aBig').style.animation='none';void $('#aBig').offsetWidth;$('#aBig').style.animation='';t0=performance.now();alive=true;}
+    function answer(i){
+      if(!alive||over)return;alive=false;
+      if(i===dir){score++;comboN++;maxC=Math.max(maxC,comboN);sHit();$('#hScore').textContent=score;$('#hCombo').textContent=maxC;combo.textContent=comboN>1?'COMBO x'+comboN:'';}
+      else{comboN=0;combo.textContent='';sMiss();toast('Wrong direction! �','Zara dhyan se 😅');}
+      setTimeout(()=>{if(!over)next();},200);
+    }
+    let sx=0,sy=0,tracking=false;
+    function dn(e){tracking=true;sx=e.clientX;sy=e.clientY;}
+    function up(e){if(!tracking)return;tracking=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)<18&&Math.abs(dy)<18)return;const i=(Math.abs(dx)>Math.abs(dy))?(dx>0?3:2):(dy>0?1:0);answer(i);}
+    stage.addEventListener('pointerdown',dn);stage.addEventListener('pointerup',up);
+    function key(e){const m={ArrowUp:0,ArrowDown:1,ArrowLeft:2,ArrowRight:3};if(e.key in m)answer(m[e.key]);}
+    window.addEventListener('keydown',key);
+    addC(()=>{stage.removeEventListener('pointerdown',dn);stage.removeEventListener('pointerup',up);window.removeEventListener('keydown',key);cancelAnimationFrame(raf);over=true;});
+    function loop(){if(over)return;if(alive){const el=performance.now()-t0;$('#aFill').style.transform='scaleX('+clamp(1-el/WIN,0,1)+')';if(el>WIN){alive=false;comboN=0;combo.textContent='';sMiss();toast('Timeout! ⏱️','Aur tez swipe!');setTimeout(()=>{if(!over)next();},250);}}raf=requestAnimationFrame(loop);}
+    next();loop();
+    const iv=setInterval(()=>{left--;$('#hTime').textContent=Math.max(0,left)+'s';if(left<=3&&left>0)sTick();if(left<=0){over=true;clearInterval(iv);cancelAnimationFrame(raf);done({score:score,maxC:maxC});}},1000);
+    addC(()=>{over=true;clearInterval(iv);});
+  });
+ }
+},
+/* ---------- 4.5. GULLY BATTLE (pass-and-play 2P) ---------- */
+battle:{
+ icon:'⚔️',name:'Gully Battle',desc:'2 players, 1 phone — reaction war!',better:'high',
+ fmt:v=>v+' rounds',
+ xp:r=>(r.meta&&r.meta.won)?40:20,
+ start(stage,done){
+  const P1=(S.name||'P1'),P2='DOST';
+  hud('<div class="hudChip">🏏 TU<b id="hP1">0</b></div><div class="hudChip">ROUND<b id="hRound">—</b></div><div class="hudChip">😈 DOST<b id="hP2">0</b></div>');
+  const pad=document.createElement('div');pad.className='tapPad';
+  pad.innerHTML='<div class="tapMsg" id="bMsg">GULLY BATTLE</div><div class="tapSub" id="bSub">Ek phone, do khiladi! Best of 3 rounds — Green hote hi tap. Jeetne wala boss! 👑</div>';
+  stage.appendChild(pad);
+  const say=(m,s)=>{$('#bMsg').textContent=m;$('#bSub').textContent=s||'';};
+  let r1=0,r2=0,round=1,turn=1,phase='idle',t0=0,tmr=0,tmrs=[];
+  const later=(fn,ms)=>{const t=setTimeout(fn,ms);tmrs.push(t);};
+  addC(()=>{clearTimeout(tmr);tmrs.forEach(clearTimeout);});
+  function arm(){phase='wait';pad.classList.remove('green');pad.classList.add('red');
+    say((turn===1?P1:P2)+' — TAYYAR!','Red rukega... GREEN hote hi MAAAR ⚡');
+    const d=TEST?200+Math.random()*300:1000+Math.random()*2500;
+    tmr=setTimeout(()=>{phase='green';pad.classList.remove('red');pad.classList.add('green');say('TAP!','');t0=performance.now();beep(1567,0.1,'sine',0.22);},d);}
+  function ready(t){turn=t;phase='idle';pad.classList.remove('green');pad.classList.remove('red');
+    say((t===1?P1+' 🔵':P2+' 🔴')+' KI BAARI','Round '+round+' — tap karke arm karo');}
+  pad.addEventListener('pointerdown',e=>{
+    e.preventDefault();
+    if(phase==='idle'){sTick();arm();}
+    else if(phase==='wait'){clearTimeout(tmr);phase='done';sMiss();toast('Early! 😅','Foul — 999ms penalty!');record(999);}
+    else if(phase==='green'){phase='done';const dt=Math.round(performance.now()-t0);sHit();record(dt);}
+  });
+  function record(ms){
+    pad.classList.remove('green');pad.classList.remove('red');
+    say((turn===1?P1:P2)+': '+ms+' ms', ms<250?'TOOFAN! 🔥':ms===999?'Foul lag gaya 😅':'Not bad!');
+    if(turn===1){window._bt1=ms;later(()=>{say('📲 PHONE '+P2+' KO DO!','Dosti test hogi ab 😤');later(()=>ready(2),1500);},1100);}
+    else{
+      const a=window._bt1||999,b=ms;
+      let w=a<b?1:(b<a?2:0);
+      if(w===1)r1++;else if(w===2)r2++;
+      $('#hP1').textContent=r1;$('#hP2').textContent=r2;
+      later(()=>{
+        const wt=w===0?'TIE! Dono barabar 😲':(w===1?P1:P2)+' ne ROUND liya! 🎉';
+        say(wt,a+' ms  vs  '+b+' ms');
+        if(r1>=2||r2>=2){later(()=>{const won=r1>=2;done({score:r1,meta:{won:won,text:won?'🏆 '+P1+' JEET GAYA! Gully ka boss tu! 👑 ('+r1+'-'+r2+')':'😤 '+P2+' jeet gaya ('+r2+'-'+r1+') — rematch maangega dost!'}});},1500);}
+        else{round++;$('#hRound').textContent=round;later(()=>ready(1),1500);}
+      },1200);
+    }
+  }
+  ready(1);
+ }
+},
+/* ---------- 5. SPRINT SHAKE (accelerometer motion sensor) ---------- */
+sprint:{
+ icon:'🏃',name:'Sprint Shake',desc:'Motion-sensor drill — phone hi trainer!',better:'high',
+ fmt:v=>v+' reps',
+ xp:r=>clamp(Math.round(r.score*0.7),10,120),
+ start(stage,done){
+  const DUR=TEST?6:15;
+  hud('<div class="hudChip">REPS<b id="hScore">0</b></div><div class="hudChip">TIME<b id="hTime">'+DUR+'s</b></div><div class="hudChip">MODE<b id="hMode">—</b></div>');
+  const help=document.createElement('div');help.className='helpLine';help.textContent='🏃 Pro sprinters roz spot-sprints karte hain — short bursts = fast feet';stage.appendChild(help);
+  const wrap=document.createElement('div');wrap.className='breathWrap';
+  wrap.innerHTML='<div style="font-size:92px;transition:transform .1s" id="sIcon">🏃</div><div class="bPhase" id="sPh">TAP TO START</div><div class="bSub" id="sSub">Phone PAKAD ke tez hilao ya spot-running karo!<br>Phone ka motion sensor khud reps ginega 📈</div>';
+  stage.appendChild(wrap);
+  let reps=0,last=0,lastTap=0,sensor=false,tapMode=false,over=false,left=DUR,started=false;
+  function spike(){reps++;$('#hScore').textContent=reps;sHit();const ic=$('#sIcon');ic.style.transform='scale(1.28)';setTimeout(()=>{ic.style.transform='scale(1)';},110);}
+  function mv(e){
+    const a=e.accelerationIncludingGravity||e.acceleration;
+    if(!a||a.x===null||a.x===undefined)return;
+    sensor=true;
+    const m=Math.sqrt(a.x*a.x+a.y*a.y+a.z*a.z);
+    const now=performance.now();
+    if(m>16&&now-last>230){last=now;spike();}
+  }
+  function pd(e){const now=performance.now();if(now-lastTap>120){lastTap=now;spike();}}
+  function attachTap(){stage.addEventListener('pointerdown',pd);addC(()=>stage.removeEventListener('pointerdown',pd));}
+  function enableTap(){if(tapMode)return;tapMode=true;$('#hMode').textContent='TAP';$('#sSub').textContent='Sensor nahi mila — koi baat nahi! Screen pe TEZ TAP karo 👆';window.removeEventListener('devicemotion',mv);attachTap();}
+  function begin(){
+    if(started)return;started=true;
+    if(tapMode){$('#hMode').textContent='TAP';attachTap();}
+    else{window.addEventListener('devicemotion',mv);addC(()=>window.removeEventListener('devicemotion',mv));}
+    countdown(stage,()=>{
+      $('#sPh').textContent='GO! GO! GO! 💨';
+      if(tapMode){$('#sSub').textContent='Screen pe TEZ TAP karo — jitna ho sake!';}
+      else{$('#hMode').textContent='SENSOR';const chk=setTimeout(()=>{if(!sensor&&!over)enableTap();},1800);addC(()=>clearTimeout(chk));}
+      const iv=setInterval(()=>{left--;$('#hTime').textContent=Math.max(0,left)+'s';if(left<=3&&left>0)sTick();if(left<=0){over=true;clearInterval(iv);done({score:reps});}},1000);
+      addC(()=>{over=true;clearInterval(iv);});
+    });
+  }
+  const arm=async()=>{
+    if(started)return;
+    if(typeof DeviceMotionEvent==='undefined'){tapMode=true;}
+    else if(typeof DeviceMotionEvent.requestPermission==='function'){
+      try{const r=await DeviceMotionEvent.requestPermission();if(r!=='granted')tapMode=true;}catch(e){tapMode=true;}
+    }
+    begin();
+  };
+  stage.addEventListener('pointerdown',arm);
+  addC(()=>stage.removeEventListener('pointerdown',arm));
+ }
+},
+/* ---------- 6. RECOVERY BREATH (Box Breathing) ---------- */
+breath:{
+ icon:'🌬️',name:'Recovery Breath',desc:'Box breathing — calm mind, tez reflexes',better:'high',
+ fmt:v=>v+' cycles',
+ xp:r=>clamp(10+r.score*6,10,70),
+ start(stage,done){
+  const CYC=RUSH?2:(TEST?2:5), PDI=TEST?1.2:4;
+  hud('<div class="hudChip">CYCLES<b id="hCyc">0/'+CYC+'</b></div><div class="hudChip">PHASE<b id="hPhase">—</b></div><div class="hudChip">TIME<b id="hTime">0s</b></div>');
+  const help=document.createElement('div');help.className='helpLine';help.textContent='Pro athletes drill ke beech aise hi saas lete hain 🧘 calm mind = fast reflexes';stage.appendChild(help);
+  const wrap=document.createElement('div');wrap.className='breathWrap';
+  wrap.innerHTML='<div class="bCyc" id="bCyc">GET READY</div><div id="bCirc">🌬️</div><div class="bPhase" id="bPh">READY?</div><div class="bSub">4 sec IN — 4 sec HOLD — 4 sec OUT — 4 sec HOLD<br>(box breathing: athletes ka secret weapon)</div>';
+  stage.appendChild(wrap);
+  countdown(stage,()=>{
+    const PH=[{n:'INHALE',d:1},{n:'HOLD',d:0},{n:'EXHALE',d:-1},{n:'HOLD',d:0}];
+    let over=false,ph=0,cyc=0,t0=performance.now(),totalStart=t0,raf=0;
+    const circ=$('#bCirc');
+    function tone(inb){
+      const a=ac();if(!a)return;const t=a.currentTime;const o=a.createOscillator(),g=a.createGain();o.type='sine';
+      if(inb){o.frequency.setValueAtTime(240,t);o.frequency.linearRampToValueAtTime(430,t+PDI);}
+      else{o.frequency.setValueAtTime(430,t);o.frequency.linearRampToValueAtTime(240,t+PDI);}
+      g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.08,t+0.25);g.gain.linearRampToValueAtTime(0.0001,t+PDI);
+      o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+PDI+0.1);
+    }
+    function startPhase(i){
+      ph=i;t0=performance.now();
+      const nm=PH[i].n;
+      $('#bPh').textContent=nm+(nm==='HOLD'?'...':(nm==='INHALE'?' ↑':' ↓'));
+      $('#hPhase').textContent=nm;
+      if(nm==='INHALE')tone(true);else if(nm==='EXHALE')tone(false);else sTick();
+      if(i===0){cyc++;$('#hCyc').textContent=cyc+'/'+CYC;$('#bCyc').textContent='CYCLE '+cyc+' / '+CYC;}
+    }
+    function loop(){
+      if(over)return;
+      const el=(performance.now()-t0)/1000;const k=Math.min(1,el/PDI);
+      const d=PH[ph].d;
+      if(d===1)circ.style.transform='scale('+(0.62+0.38*k)+')';
+      else if(d===-1)circ.style.transform='scale('+(1-0.38*k)+')';
+      $('#hTime').textContent=Math.floor((performance.now()-totalStart)/1000)+'s';
+      if(el>=PDI){
+        const ni=(ph+1)%4;
+        if(ni===0&&cyc>=CYC){over=true;cancelAnimationFrame(raf);done({score:cyc});return;}
+        startPhase(ni);
+      }
+      raf=requestAnimationFrame(loop);
+    }
+    startPhase(0);loop();
+    addC(()=>{over=true;cancelAnimationFrame(raf);});
+  });
+ }
+}
+};
+
+/* ================= LAUNCH / FINISH ================= */
+function launch(id){
+  cleanupAll();CUR=id;const g=GAMES[id];
+  $('#gTitle').textContent=g.icon+' '+g.name;
+  const stage=$('#stage');stage.innerHTML='';
+  show('scr-game');
+  g.start(stage,res=>{cleanupAll();finish(id,res);});
+}
+function finish(id,res){
+  const g=GAMES[id];
+  const xp=Math.max(10,Math.round(g.xp(res)));
+  const prevL=lvl(S.xp);S.xp+=xp;const nl=lvl(S.xp);
+  S.plays++;
+  let nb=false;
+  if(g.better==='low'){if(!S.best[id]||res.score<S.best[id]){S.best[id]=res.score;nb=true;}}
+  else{if(res.score>(S.best[id]||0)){S.best[id]=res.score;nb=true;}}
+  if(id==='tap'){S.hist.tap.push(Math.round(res.score));if(S.hist.tap.length>20)S.hist.tap.shift();}
+  touchStreak();save();
+  const bonusDone=missionHit(id);
+  if(RUSH){
+    RUSH.xp+=xp;RUSH.i++;
+    if(bonusDone){setTimeout(()=>toast('MISSION COMPLETE! 🫡','+30 BONUS XP!'),900);}
+    if(RUSH.i<RUSH_STEPS.length){rushSplash();return;}
+    S.xp+=30;save();const total=RUSH.xp+30;
+    $('#rIcon').textContent='⚡';$('#rName').textContent='5-MIN RUSH — COMPLETE!';
+    $('#rScore').textContent='+'+total+' XP';$('#rScore2').textContent='Full circuit: '+RUSH_STEPS.length+' drills back-to-back!';
+    $('#rBest').textContent='—';$('#rXp').textContent='+'+total+' XP';$('#rStreak').textContent='🔥 '+S.streak;
+    $('#rBestTag').textContent='🏆 CIRCUIT DONE!';$('#rBestTag').style.display='inline-block';$('#rLevelTag').style.display='none';
+    $('#rBench').style.display='none';
+    $('#rQuote').textContent='"Train hard. Breathe. Recover. Repeat." — athlete banne ka formula! 🫡';
+    show('scr-result');sFan();confetti(220);
+    RUSH=null;CUR=null;renderHome();return;
+  }
+  $('#rIcon').textContent=g.icon;$('#rName').textContent=g.name;
+  $('#rScore').textContent=g.fmt(res.score);$('#rScore2').textContent=g.fmt(res.score);
+  $('#rBest').textContent=g.fmt(S.best[id]);$('#rXp').textContent='+'+xp+' XP';
+  $('#rStreak').textContent='🔥 '+S.streak;
+  $('#rBestTag').style.display=nb?'inline-block':'none';
+  $('#rLevelTag').style.display=(nl>prevL)?'inline-block':'none';
+  const bb=$('#rBench');
+  if(id==='tap'){bb.style.display='block';const me=Math.round(res.score);
+    setTimeout(()=>{$('#bYou').style.width=Math.min(100,me/3.4)+'%';},60);
+    $('#bYouV').textContent=me+' ms';
+    $('#rVerdict').textContent=me<=210?'🏆 PRO ATHLETE ZONE — kamaal kar diya!':me<=250?'⚡ Faster than most adults. Shaabaash! 💪':me<=300?'👍 Average se tez — thodi aur training, pro zone paas hai!':'🐢 Abhi warm-up hai — roz drill karo, time pakka girega!';
+  }else{bb.style.display='none';}
+  $('#rBestTag').textContent='🏆 NEW BEST!';
+  $('#rQuote').textContent=(id==='battle'&&res.meta&&res.meta.text)?res.meta.text:QUOTES[Math.floor(Math.random()*QUOTES.length)];
+  show('scr-result');
+  if(nb){sFan();confetti(150);}
+  else if(nl>prevL){sFan();confetti(90);}
+  else{sGo();}
+  if(bonusDone){sFan();confetti(200);setTimeout(()=>toast('MISSION COMPLETE! 🫡','+30 BONUS XP — Coach proud hai aapse!'),800);}
+  renderHome();
+}
+
+/* ================= HOME RENDER ================= */
+function badgeFor(l){return l>=9?'👑':l>=6?'🥇':l>=3?'🥈':'🥉';}
+function renderHome(){
+  ensureMission();
+  const L=lvl(S.xp);
+  $('#pName').textContent=S.name;
+  $('#pBadge').textContent=badgeFor(L);
+  $('#pLvl').textContent='Level '+L;
+  $('#pXpTxt').textContent=(S.xp%100)+'/100 XP';
+  $('#pXpFill').style.width=(S.xp%100)+'%';
+  $('#sStreak').textContent=S.streak;
+  $('#sBest').textContent=S.best.tap?Math.round(S.best.tap)+'ms':'—';
+  $('#sPlays').textContent=S.plays;
+  $('#sLvl').textContent=L;
+  const grid=$('#drillGrid');grid.innerHTML='';
+  const cols={tap:'linear-gradient(135deg,#ffd60a,#ff9f1c)',smash:'linear-gradient(135deg,#ef4444,#b91c1c)',catch:'linear-gradient(135deg,#2ec4b6,#0e7490)',arrows:'linear-gradient(135deg,#a855f7,#6d28d9)',breath:'linear-gradient(135deg,#22d3ee,#0369a1)',battle:'linear-gradient(135deg,#f43f5e,#9f1239)',sprint:'linear-gradient(135deg,#fb923c,#ea580c)'};
+  Object.keys(GAMES).filter(k=>k!=='battle').forEach(id=>{
+    const g=GAMES[id];
+    const b=document.createElement('button');b.className='dcard';
+    b.innerHTML='<div class="glow" style="background:'+cols[id]+'"></div><div class="dIcon">'+g.icon+'</div><div class="dName">'+g.name+'</div><div class="dDesc">'+g.desc+'</div><div class="dBest">🏆 '+(S.best[id]?g.fmt(S.best[id]):'abhi tak nahi khela')+'</div>';
+    b.addEventListener('click',()=>launch(id));
+    grid.appendChild(b);
+  });
+  renderMissions();
+  renderWater();
+}
+
+/* ================= PROGRESS ================= */
+function renderProgress(){
+  const box=$('#pGames');box.innerHTML='';
+  Object.keys(GAMES).forEach(id=>{
+    const g=GAMES[id];
+    const r=document.createElement('div');r.className='pRow';
+    r.innerHTML='<div class="pIcon">'+g.icon+'</div><div class="pInfo"><b>'+g.name+'</b><div>'+g.desc+'</div></div><div class="pBest">'+(S.best[id]?g.fmt(S.best[id]):'—')+'</div>';
+    box.appendChild(r);
+  });
+  const ch=$('#chart');ch.innerHTML='';
+  const data=S.hist.tap.slice(-10);
+  if(!data.length){ch.innerHTML='<div style="width:100%;text-align:center;color:var(--dim);font-size:12px;align-self:center">Green Tap khel ke aao — yahan graph banega 📊</div>';return;}
+  const max=Math.max.apply(null,data.concat([600]));
+  data.forEach(v=>{
+    const c=document.createElement('div');c.className='cbar';
+    c.innerHTML='<span>'+v+'</span><i style="height:'+Math.max(4,Math.round(v/max*72))+'px"></i>';
+    ch.appendChild(c);
+  });
+}
+
+/* ================= WIRE UP ================= */
+$('#btnBack').addEventListener('click',()=>{cleanupAll();RUSH=null;CUR=null;renderHome();show('scr-home');});
+$('#rHome').addEventListener('click',()=>{renderHome();show('scr-home');});
+$('#rReplay').addEventListener('click',()=>{if(CUR)launch(CUR);});
+$('#btnProgress').addEventListener('click',()=>{renderProgress();show('scr-progress');});
+$('#pBack').addEventListener('click',()=>{renderHome();show('scr-home');});
+$('#btnHelp').addEventListener('click',()=>$('#modal').classList.add('show'));
+$('#mClose').addEventListener('click',()=>$('#modal').classList.remove('show'));
+$('#btnEdit').addEventListener('click',()=>{
+  let n='';
+  try{n=prompt('Apna champion naam likho (12 letters):',S.name)||'';}catch(e){}
+  n=n.trim().slice(0,14);if(n){S.name=n;save();renderHome();toast('Naam set! 💪','Welcome, '+n);}
+});
+$('#rShare').addEventListener('click',async()=>{
+  if(!CUR)return;const g=GAMES[CUR];const best=S.best[CUR];
+  const txt='⚔️ GULLYREFLEX CHALLENGE!\n'+S.name+' ka '+g.name+' best: '+(best?g.fmt(best):'—')+'\n🔥 '+S.streak+'-day streak · Level '+lvl(S.xp)+' · '+S.plays+' drills done\nHimmat hai toh mera score beat kar ke dikha! 🏏\n— GullyReflex: offline pocket sports coach 🇮🇳';
+  let ok=false;
+  try{await navigator.clipboard.writeText(txt);ok=true;}catch(e){
+    try{const t=document.createElement('textarea');t.value=txt;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();ok=true;}catch(e2){}
+  }
+  toast(ok?'Challenge copied! 📲':'Copy nahi hua 😅', ok?'WhatsApp pe dosto ko bhej — gully war shuru! ⚔️':'');
+  if(ok)sGo();
+});
+$('#btnRush').addEventListener('click',()=>{startRush();});
+$('#btnBattle').addEventListener('click',()=>{cleanupAll();RUSH=null;launch('battle');});
+$('#wPlus').addEventListener('click',addGlass);
+$('#btnReset').addEventListener('click',()=>{
+  let ok=false;try{ok=confirm('Pakka? Saara progress delete ho jayega!');}catch(e){}
+  if(ok){S=DEF();save();renderHome();renderProgress();toast('Reset done 🗑️','Nayi shuruaat!');}
+});
+document.addEventListener('dblclick',e=>e.preventDefault());
+
+renderHome();
+</script>
+</body>
+</html>
